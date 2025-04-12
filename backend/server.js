@@ -1,6 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+
+dotenv.config(); // Load environment variables from .env file
+
 import connectDB from './config/db.js'; // Assuming you have db connection logic
 
 // Import routes
@@ -9,7 +12,6 @@ import authRoutes from './routes/auth.js'; // Import new route
 import recommendationRoutes from './routes/recommendations.js'; // Import new route
 import jobRoutes from './routes/jobs.js'; // Import new route
 
-dotenv.config(); // Load environment variables from .env file
 
 connectDB(); // Connect to MongoDB
 

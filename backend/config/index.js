@@ -3,7 +3,7 @@ dotenv.config(); // Load environment variables from .env file
 
 export default {
     port: process.env.PORT || 5001,
-    mongodbUri: process.env.MONGODB_URI,
+    mongodbUri: process.env.MONGO_URI,
     auth0: {
         domain: process.env.AUTH0_DOMAIN,
         audience: process.env.AUTH0_AUDIENCE,
