@@ -25,6 +25,19 @@ const UserSchema = new mongoose.Schema({
         type: [String], // Array of strings representing goals
         default: [],
     },
+    resumeFilename: {
+        type: String,
+        trim: true,
+        default: null // Or just omit default if you prefer undefined
+    },
+    resumeLastUploaded: {
+        type: Date,
+        default: null
+    },
+    resumeData: { // Store the parsed JSON data from Gemini
+        type: mongoose.Schema.Types.Mixed, // Use Mixed for flexible object structure
+        default: null
+    },
     // Add other profile fields as needed (skills, experience, etc.)
     createdAt: {
         type: Date,
