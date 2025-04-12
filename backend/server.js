@@ -1,37 +1,33 @@
 import express from 'express';
 import cors from 'cors';
-import config from './config/index.js';
-import connectDB from './config/db.js';
+import dotenv from 'dotenv';
+import connectDB from './config/db.js'; // Assuming you have db connection logic
 
 // Import routes
 import userRoutes from './routes/users.js';
-import recommendationRoutes from './routes/recommendations.js';
-// import authRoutes from './routes/auth.js'; // If needed
-// import jobRoutes from './routes/jobs.js'; // If needed
+import authRoutes from './routes/auth.js'; // Import new route
+import recommendationRoutes from './routes/recommendations.js'; // Import new route
+import jobRoutes from './routes/jobs.js'; // Import new route
 
-// Connect to Database
-connectDB();
+dotenv.config(); // Load environment variables from .env file
+
+connectDB(); // Connect to MongoDB
 
 const app = express();
 
-// Init Middleware
+// Middleware
 app.use(cors()); // Enable CORS for frontend requests
-app.use(express.json({ extended: false })); // Body parser for JSON
+app.use(express.json()); // Body parser for JSON requests
 
-// Define Routes
-app.get('/', (req, res) => res.send('LuckIn API Running')); // Simple health check
+// Define API Routes
 app.use('/api/users', userRoutes);
-app.use('/api/recommendations', recommendationRoutes);
-// app.use('/api/auth', authRoutes);
-// app.use('/api/jobs', jobRoutes);
+app.use('/api/auth', authRoutes); // Use new route
+app.use('/api/recommendations', recommendationRoutes); // Use new route
+app.use('/api/jobs', jobRoutes); // Use new route
 
-// Basic Error Handling (can be expanded)
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
-});
+// Basic route
+app.get('/', (req, res) => res.send('LuckIn API Running'));
 
-
-const PORT = config.port;
+const PORT = process.env.PORT || 5001;
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
