@@ -44,6 +44,7 @@ const Auth0ProviderWithRedirectCallback = ({ children }) => {
       authorizationParams={{
         redirect_uri: window.location.origin + '/callback', // Auth0 Callback URL
         audience: auth0Audience, // Request token for your backend API
+        scope: "openid profile email offline_access"
         // scope: "openid profile email read:current_user update:current_user_metadata" // Add necessary scopes
       }}
       onRedirectCallback={onRedirectCallback} // <-- Add the callback handler here
