@@ -29,31 +29,66 @@ const upload = multer({
 // @desc    Get current user's profile (or create if doesn't exist)
 // @access  Private (Requires Auth0 token)
 router.get('/profile', checkJwt, async (req, res) => {
+    console.log("GET /api/users/profile route hit.");
     try {
-        const auth0Id = req.auth.payload.sub; // Get user ID from verified token
+        console.log("Auth0 Token Payload Received:", JSON.stringify(req.auth?.payload, null, 2));
+
+        const auth0Id = req.auth?.payload?.sub;
+
+        if (!auth0Id) {
+            console.error("Error in GET /profile: Auth0 ID (sub) missing from token payload.");
+            return res.status(401).json({ message: 'Authentication payload invalid.' });
+        }
+        console.log(`Attempting to find user with auth0Id: ${auth0Id}`);
 
         let user = await User.findOne({ auth0Id });
 
         if (!user) {
-            // If user doesn't exist in DB, create them
-            console.log(`Creating new user profile for auth0Id: ${auth0Id}`);
+            console.log(`User not found for auth0Id: ${auth0Id}. Attempting to create...`);
+
+            // --- Read namespaced custom claims ---
+            // Define the namespace used in your Auth0 Action
+            const namespace = 'https://luckin-app.com/'; // Make sure this matches your Action!
+
+            const email = req.auth.payload[`${namespace}email`]; // Read namespaced email
+            const name = req.auth.payload[`${namespace}name`];   // Read namespaced name
+            const picture = req.auth.payload[`${namespace}picture`]; // Read namespaced picture
+            // ------------------------------------
+
+            console.log(`Creating user with: email=${email}, name=${name}, picture=${picture ? 'present' : 'missing'}`);
+
+            // Check if email (read from custom claim) is missing
+            if (!email) {
+               console.error(`Cannot create user for auth0Id ${auth0Id}: Email claim ('${namespace}email') is missing from Auth0 token payload. Check Auth0 Action and user profile.`);
+               // It's crucial the Action runs and the user has an email in Auth0
+               return res.status(400).json({ message: 'Cannot create user profile, email missing from token.' });
+            }
+
             user = new User({
                 auth0Id: auth0Id,
-                // Safely access payload properties
-                email: req.auth.payload.email,
-                name: req.auth.payload.name,
-                picture: req.auth.payload.picture,
-                // Initialize other fields if necessary
+                email: email, // Use email from custom claim
+                name: name,   // Use name from custom claim (can be null/undefined if not present)
+                picture: picture, // Use picture from custom claim (can be null/undefined)
                 careerGoals: [],
                 resumeData: null,
                 resumeFilename: null,
             });
-            await user.save();
+
+            try {
+                await user.save();
+                console.log(`Successfully created and saved new user for auth0Id: ${auth0Id}`);
+            } catch (saveError) {
+                console.error(`Error saving new user for auth0Id: ${auth0Id}`, saveError);
+                return res.status(500).json({ message: 'Failed to save new user profile.', error: saveError.message });
+            }
+        } else {
+            console.log(`User found for auth0Id: ${auth0Id}`);
         }
 
         res.json(user);
+
     } catch (err) {
-        console.error("Error fetching/creating user profile:", err); // Log the full error
+        console.error("Error in GET /api/users/profile handler:", err);
         res.status(500).send('Server Error');
     }
 });
@@ -151,19 +186,20 @@ router.post(
         }
 
         // --- Update User Document in MongoDB ---
+        console.log(`Attempting to update user with auth0Id: ${auth0Id}`); // <-- ADD THIS LINE
         console.log('Updating user document in MongoDB with parsed data...');
         const updatedUser = await User.findOneAndUpdate(
             { auth0Id },
             {
                 $set: {
-                    resumeData: parsedData, // Store the actual parsed data from Gemini
+                    resumeData: parsedData,
                     resumeFilename: req.file.originalname,
                     resumeLastUploaded: new Date()
                 }
             },
             { new: true }
         );
-
+    
         if (!updatedUser) {
             console.error(`User not found for update after resume upload: ${auth0Id}`);
             return res.status(404).json({ message: 'User profile not found for update.' });
