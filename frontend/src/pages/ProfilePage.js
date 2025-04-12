@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 // import ProfileInfo from '../components/Auth/ProfileInfo'; // Keep this if you want basic Auth0 info
-import LoadingSpinner from '../components/Common/LoadingSpinner'; // Optional
 
 // Define the base URL for your API from environment variables
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -61,9 +60,6 @@ const ProfilePage = () => {
     fetchUserProfile();
   }, [isAuthenticated, getAccessTokenSilently]); // Re-run if auth state changes
 
-  if (isAuthLoading || isLoading) {
-    return <LoadingSpinner />;
-  }
 
   // Optional: Redirect or show message if not authenticated
   if (!isAuthenticated) {

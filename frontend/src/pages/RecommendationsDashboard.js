@@ -3,14 +3,10 @@ import { useAuth0 } from '@auth0/auth0-react';
 // import PlaylistRecommendations from '../components/Recommendations/PlaylistRecommendations'; // Future component
 // import PodcastRecommendations from '../components/Recommendations/PodcastRecommendations'; // Future component
 // import TrainingRecommendations from '../components/Recommendations/TrainingRecommendations'; // Future component
-import LoadingSpinner from '../components/Common/LoadingSpinner'; // Optional
 
 const RecommendationsDashboard = () => {
     const { isAuthenticated, isLoading } = useAuth0();
 
-    if (isLoading) {
-        return <LoadingSpinner />;
-    }
 
     // Optional: Redirect or show message if not authenticated
     if (!isAuthenticated) {
