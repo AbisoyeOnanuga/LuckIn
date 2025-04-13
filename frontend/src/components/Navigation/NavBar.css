@@ -1,0 +1,112 @@
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Pushes items apart */
+    padding: 10px 30px; /* Vertical and horizontal padding */
+    background-color: #ffffff; /* White background */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    position: sticky; /* Make it stick to the top */
+    top: 0;
+    z-index: 1000; /* Ensure it stays above other content */
+    transition: padding 0.3s ease; /* Smooth transition for padding change */
+    height: 60px; /* Define a fixed height */
+    box-sizing: border-box;
+}
+  
+/* Styles when scrolled */
+.navbar.scrolled {
+    padding: 5px 30px; /* Reduce padding when scrolled */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Slightly stronger shadow */
+}
+  
+/* Logotype Styling */
+.logotype {
+    font-weight: bold;
+    font-style: italic;
+    font-size: 1.8em; /* Adjust size as needed */
+    /* Prevent text selection */
+    user-select: none;
+    /* Add transition for smooth text change effect (optional, might need more complex setup for slide) */
+    transition: all 0.3s ease;
+    overflow: hidden; /* Helps if doing a slide effect */
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+.logotype-link {
+    text-decoration: none;
+    color: #004d40; /* Use a color from your theme */
+    display: inline-block; /* Needed for transitions */
+    transition: color 0.3s ease;
+}
+
+.logotype-link:hover {
+    color: #00796b; /* Lighter shade on hover */
+}
+
+/* Navigation Links Styling */
+.nav-links {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    gap: 25px; /* Space between links */
+}
+
+.nav-links li {
+    padding: 0;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333; /* Standard link color */
+    font-size: 1em;
+    padding: 5px 0; /* Add some vertical padding for hover effect */
+    position: relative; /* For underline effect */
+    transition: color 0.3s ease;
+}
+
+/* Underline effect on hover/active */
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #00796b; /* Theme color */
+    transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after,
+.nav-links a.active::after { /* Style active link */
+    width: 100%;
+}
+
+.nav-links a:hover,
+.nav-links a.active { /* Style active link */
+    color: #00796b; /* Theme color */
+}
+
+/* Auth Buttons Container */
+.auth-buttons {
+    /* Styles for the container holding login/logout */
+    margin-left: 15px;
+}
+
+/* Optional: Style the buttons themselves if needed */
+.auth-buttons button {
+    padding: 8px 15px;
+    background-color: #00796b;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 0.9em;
+}
+
+.auth-buttons button:hover {
+    background-color: #004d40;
+}
+  
+  
