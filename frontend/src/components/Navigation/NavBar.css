@@ -23,24 +23,68 @@
 .logotype {
     font-weight: bold;
     font-style: italic;
-    font-size: 1.8em; /* Adjust size as needed */
-    /* Prevent text selection */
+    font-size: 1.8em; /* Base size */
     user-select: none;
-    /* Add transition for smooth text change effect (optional, might need more complex setup for slide) */
-    transition: all 0.3s ease;
-    overflow: hidden; /* Helps if doing a slide effect */
-    white-space: nowrap; /* Prevent wrapping */
+    /* Crucial: Set perspective for 3D-like transforms if needed, and preserve 3D for children */
+    /* perspective: 500px; */
+    /* transform-style: preserve-3d; */
 }
 
 .logotype-link {
     text-decoration: none;
-    color: #004d40; /* Use a color from your theme */
-    display: inline-block; /* Needed for transitions */
+    color: #004d40;
+    display: inline-block; /* Important for container */
     transition: color 0.3s ease;
 }
 
 .logotype-link:hover {
-    color: #00796b; /* Lighter shade on hover */
+    color: #00796b;
+}
+
+/* Container for the text elements */
+.logo-text-container {
+    position: relative; /* Allows absolute positioning of children */
+    display: inline-block;
+    /* Set a fixed height to prevent jumpiness during transition */
+    height: 1.2em; /* Adjust based on font-size and line-height */
+    line-height: 1.2em;
+    /* Overflow hidden can help clip animations */
+    /* overflow: hidden; */
+}
+
+/* Shared styles for both logo spans */
+.logo-full,
+.logo-short {
+    display: inline-block;
+    position: absolute; /* Position them on top of each other */
+    top: 0;
+    left: 0;
+    width: 100%; /* Ensure they take up container width */
+    text-align: center; /* Center text if container width is fixed */
+    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55), /* cubic-bezier for bounce */
+                opacity 0.4s ease-out;
+    backface-visibility: hidden; /* Prevent flickering during transform */
+}
+
+/* Initial state for full logo */
+.logo-full.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+.logo-full.hidden {
+    opacity: 0;
+    transform: translateY(-100%) scale(0.8); /* Slide up and shrink */
+}
+
+/* Initial state for short logo */
+.logo-short.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition-delay: 0.1s; /* Slight delay for appearing */
+}
+.logo-short.hidden {
+    opacity: 0;
+    transform: translateY(100%) scale(0.8); /* Slide down and shrink */
 }
 
 /* Navigation Links Styling */

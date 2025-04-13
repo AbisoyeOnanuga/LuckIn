@@ -30,10 +30,18 @@ const NavBar = () => {
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
       {/* Logotype Element */}
       <div className="logotype">
-        {/* Use NavLink for the logo link to potentially style it if it's the active route ('/') */}
         <NavLink to="/" className="logotype-link">
-          {/* Content changes based on scroll state */}
-          {isScrolled ? 'LI' : 'LuckIn'}
+          {/* Container for the animating text */}
+          <div className="logo-text-container">
+            {/* Full Logo Text */}
+            <span className={`logo-full ${!isScrolled ? 'visible' : 'hidden'}`}>
+              LuckIn
+            </span>
+            {/* Short Logo Text */}
+            <span className={`logo-short ${isScrolled ? 'visible' : 'hidden'}`}>
+              LI
+            </span>
+          </div>
         </NavLink>
       </div>
 
@@ -48,7 +56,7 @@ const NavBar = () => {
           </>
         )}
       </ul>
-      
+
       <div className="auth-buttons">
         {!isAuthenticated ? <LoginButton /> : <LogoutButton />}
       </div>
