@@ -2,12 +2,18 @@ import express from 'express';
 import checkJwt from '../middleware/checkJwt.js'; // Decide if job searching requires login
 import User from '../models/User.js';
 import JobPosting from '../models/JobPosting.js'; // <-- Import JobPosting model
+import { getJobRelevanceScore } from '../services/geminiService.js'; // <-- Import the new service
 
 // Import necessary controllers or service functions later
 // import * as jobController from '../controllers/jobController.js';
 // import { scrapeJobs } from '../services/scraper.js';
 
 const router = express.Router();
+
+const INITIAL_CANDIDATE_LIMIT = 50; // How many jobs to fetch from DB initially
+const AI_PROCESSING_LIMIT = 10; // How many top candidates to send to Gemini
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const DELAY_BETWEEN_AI_CALLS_MS = 500; // e.g., 500ms delay
 
 // @route   GET api/jobs/search
 // @desc    Search for jobs (potentially scraped) - Kept for general search later
@@ -51,7 +57,7 @@ router.get('/search', checkJwt, async (req, res) => {
 
 
 // @route   GET api/jobs/recommendations
-// @desc    Get personalized job recommendations based on user's resume skills
+// @desc    Get personalized job recommendations using AI relevance scoring
 // @access  Private
 router.get('/recommendations', checkJwt, async (req, res) => {
     const auth0Id = req.auth.payload.sub;
@@ -59,50 +65,76 @@ router.get('/recommendations', checkJwt, async (req, res) => {
     try {
         console.log(`Fetching recommendations for user: ${auth0Id}`);
 
-        // 1. Fetch User Profile with resumeData.skills
-        const user = await User.findOne({ auth0Id }).select('resumeData.skills'); // Select only skills
+        // 1. Fetch User Profile skills
+        const user = await User.findOne({ auth0Id }).select('resumeData.skills');
+        if (!user) return res.status(404).json({ message: 'User profile not found.' });
 
-        if (!user) {
-            console.log(`User not found for recommendations: ${auth0Id}`);
-            return res.status(404).json({ message: 'User profile not found.' });
-        }
-
-        // 2. Check if resume data/skills exist
-        const userSkills = user.resumeData?.skills; // Optional chaining
+        const userSkills = user.resumeData?.skills;
         if (!userSkills || userSkills.length === 0) {
-            console.log(`No resume data or skills found for user: ${auth0Id}`);
-            // Return empty array instead of error, frontend handles "no recommendations" message
+            console.log(`No skills found for user ${auth0Id}. Returning empty recommendations.`);
             return res.json([]);
-            // Or return error: return res.status(400).json({ message: 'Please upload a resume with extracted skills to get recommendations.' });
         }
-
-        // 3. Prepare skills for query (lowercase and escape regex characters if needed)
-        // Basic approach: case-insensitive match using regex
-        const skillRegexes = userSkills.map(skill => new RegExp(skill.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i')); // Escape special chars, case-insensitive
         console.log(`User skills for matching: ${userSkills.join(', ')}`);
 
-        // 4. Query JobPostings collection
-        // Find jobs where the 'title' or 'description' contains ANY of the user's skills
-        // This is a basic matching strategy, can be refined later (e.g., matching dedicated skill fields)
-        const recommendedJobs = await JobPosting.find({
+        // 2. Initial Candidate Filtering from DB
+        const skillRegexes = userSkills.map(skill => new RegExp(skill.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'i'));
+
+        console.log(`Fetching initial candidates from DB (limit ${INITIAL_CANDIDATE_LIMIT})...`);
+        const initialCandidates = await JobPosting.find({
             $or: [
                 { title: { $in: skillRegexes } },
                 { description: { $in: skillRegexes } }
-                // Add more fields if relevant, e.g., a dedicated 'requiredSkills' array if you scrape that
-                // { requiredSkills: { $in: skillRegexes } }
             ]
         })
-        .sort({ scrapedAt: -1 }) // Prioritize newer postings
-        .limit(20); // Limit the number of recommendations returned
+        .sort({ scrapedAt: -1 })
+        .limit(INITIAL_CANDIDATE_LIMIT)
+        .lean();
 
-        console.log(`Found ${recommendedJobs.length} recommended jobs for user: ${auth0Id}`);
+        if (initialCandidates.length === 0) {
+            console.log("No initial candidates found based on skill keywords.");
+            return res.json([]);
+        }
+        console.log(`Found ${initialCandidates.length} initial candidates.`);
 
-        // 5. Return Recommendations
-        res.json(recommendedJobs);
+        // 3. Select Top N for AI Processing <-- Define candidatesForAI here!
+        const candidatesForAI = initialCandidates.slice(0, AI_PROCESSING_LIMIT);
+        // -------------------------------------------------------------------
+
+        // 4. Call Gemini Sequentially with Delays
+        console.log(`Processing top ${candidatesForAI.length} candidates with Gemini (with delays)...`);
+
+        const jobsWithRelevance = []; // Initialize array to store results
+        for (const job of candidatesForAI) { // <-- Now iterates over the correct variable
+            try {
+                const relevance = await getJobRelevanceScore(userSkills, job.title, job.description);
+                jobsWithRelevance.push({
+                    ...job,
+                    aiRelevance: relevance
+                });
+                // Wait before the next call
+                if (candidatesForAI.indexOf(job) < candidatesForAI.length - 1) {
+                    console.log(`Waiting ${DELAY_BETWEEN_AI_CALLS_MS / 1000}s...`);
+                    await delay(DELAY_BETWEEN_AI_CALLS_MS);
+                }
+            } catch (aiError) {
+                console.error(`Error getting AI score for job ${job._id}:`, aiError.message);
+                jobsWithRelevance.push({ ...job, aiRelevance: null });
+            }
+        }
+
+        // 5. Filter and Sort based on AI Score
+        const finalRecommendations = jobsWithRelevance
+            .filter(job => job.aiRelevance && job.aiRelevance.score >= 0.3)
+            .sort((a, b) => (b.aiRelevance?.score || 0) - (a.aiRelevance?.score || 0));
+
+        console.log(`Returning ${finalRecommendations.length} AI-ranked recommendations.`);
+
+        // 6. Return Final Recommendations
+        res.json(finalRecommendations);
 
     } catch (err) {
         console.error(`Error fetching recommendations for user ${auth0Id}:`, err);
-        res.status(500).send('Server Error');
+        res.status(500).json({ message: 'Server error fetching recommendations.' });
     }
 });
 
