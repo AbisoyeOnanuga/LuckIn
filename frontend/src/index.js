@@ -11,6 +11,11 @@ const auth0Domain = process.env.REACT_APP_AUTH0_DOMAIN;
 const auth0ClientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
 const auth0Audience = process.env.REACT_APP_AUTH0_AUDIENCE; // For requesting access token for your API
 
+// Determine the correct redirect URI based on the environment
+const redirectUri = process.env.NODE_ENV === 'production'
+  ? process.env.REACT_APP_AUTH0_CALLBACK_URL
+  : window.location.origin; // Or your specific local callback if needed
+
 // --- Helper Component ---
 // This component allows us to use the useNavigate hook within the Auth0Provider's callback
 const Auth0ProviderWithRedirectCallback = ({ children }) => {
@@ -39,17 +44,18 @@ const Auth0ProviderWithRedirectCallback = ({ children }) => {
 
   return (
     <Auth0Provider
-      domain={auth0Domain}
-      clientId={auth0ClientId}
+      domain={process.env.REACT_APP_AUTH0_DOMAIN}
+      clientId={process.env.REACT_APP_AUTH0_CLIENT_ID}
       authorizationParams={{
-        redirect_uri: window.location.origin + '/callback', // Auth0 Callback URL
-        audience: auth0Audience, // Request token for your backend API
-        scope: "openid profile email offline_access"
-        // scope: "openid profile email read:current_user update:current_user_metadata" // Add necessary scopes
+        // Use the environment variable for audience
+        audience: process.env.REACT_APP_AUTH0_AUDIENCE,
+        // Use the dynamically determined redirectUri
+        redirect_uri: redirectUri,
+        // Include scopes if needed, e.g., for refresh tokens
+        // scope: "openid profile email offline_access"
       }}
-      onRedirectCallback={onRedirectCallback} // <-- Add the callback handler here
-      useRefreshTokens={true}
-      cacheLocation="localstorage"
+      // Optional: Add cacheLocation="localstorage" for better persistence
+      // cacheLocation="localstorage"
     >
       {children}
     </Auth0Provider>
