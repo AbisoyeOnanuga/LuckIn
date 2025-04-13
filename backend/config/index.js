@@ -13,6 +13,7 @@ export default {
         clientId: process.env.SPOTIFY_CLIENT_ID,
         clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
     },
+    listenNotesApiKey: process.env.LISTENNOTES_API_KEY,
     rapidApiKey: process.env.RAPIDAPI_KEY,
     rapidApiSpotifyHost: process.env.RAPIDAPI_SPOTIFY_HOST,
     // Add other config values as needed
