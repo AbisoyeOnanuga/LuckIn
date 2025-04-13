@@ -1,0 +1,140 @@
+.job-recommendations-container {
+    padding: 20px;
+    padding-bottom: 60px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    margin-top: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Add this line */
+}
+
+.job-recommendations-container h2 {
+    margin-top: 0;
+    color: #333;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.job-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    /* --- Add Grid Layout --- */
+    display: grid;
+    /* Create columns: minimum 300px wide, fill available space, create as many columns as fit */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px; /* Spacing between cards */
+    row-gap: 60px;
+    /* --------------------- */
+}
+
+.job-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px; /* Slightly larger radius for card feel */
+    padding: 20px; /* Increase padding slightly */
+    margin-bottom: 0; /* Remove bottom margin as gap handles spacing */
+    transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out; /* Add transform transition */
+    display: flex; /* Use flexbox for internal layout */
+    flex-direction: column; /* Stack content vertically */
+    height: 100%; /* Make cards in the same row equal height (if grid rows allow) */
+}
+
+.job-item:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Enhance hover shadow */
+    transform: translateY(-3px); /* Slight lift on hover */
+}
+
+.job-item h3 {
+    margin-top: 0;
+    margin-bottom: 8px; /* Adjust spacing */
+    color: #0056b3;
+    font-size: 1.1em; /* Slightly larger title */
+}
+
+.job-company-location {
+    font-size: 0.95em;
+    color: #555;
+    margin-bottom: 15px; /* Increase spacing */
+}
+
+.job-company-location strong {
+    font-weight: 600;
+}
+
+.job-description {
+    font-size: 0.9em;
+    color: #444;
+    line-height: 1.5;
+    margin-bottom: 15px; /* Increase spacing */
+    flex-grow: 1; /* Allow description to take up available space */
+}
+
+.job-skills {
+    font-size: 0.85em;
+    color: #666;
+    margin-bottom: 20px; /* Increase spacing */
+    /* Wrap skills if they get too long */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.job-skills strong {
+    color: #333;
+    margin-right: 5px; /* Space after "Skills:" */
+    flex-basis: 100%; /* Make "Skills:" label take full width initially */
+}
+
+/* Style individual skill tags (optional but nice) */
+.job-skills span {
+    background-color: #e9ecef;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+}
+
+
+.job-link {
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease;
+    margin-top: auto; /* Push link to the bottom */
+    align-self: flex-start; /* Align link to the start (left) */
+}
+
+.job-link:hover {
+    background-color: #0056b3;
+}
+
+/* Status Messages */
+.loading-message,
+.error-message,
+.no-recommendations {
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.loading-message {
+    background-color: #eef;
+    color: #33a;
+}
+
+.error-message {
+    background-color: #fdd;
+    color: #c00;
+    font-weight: bold;
+}
+
+.no-recommendations {
+    background-color: #fff3cd; /* Light yellow */
+    color: #856404; /* Dark yellow/brown */
+    border: 1px solid #ffeeba;
+}
