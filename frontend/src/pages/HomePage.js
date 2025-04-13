@@ -1,5 +1,7 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import './HomePage.css';
+import illustration from '../undraw_process_7lkc.svg';
 
 const HomePage = () => {
   const { isAuthenticated, user } = useAuth0();
@@ -9,7 +11,7 @@ const HomePage = () => {
       <div className="hero-section">
         {/* Option 1: Using the SVG as an img */}
         <img
-          src='../undraw_process_7lkc.svg' // Make sure the path is correct (usually relative to the public folder)
+          src={illustration} // Make sure the path is correct (usually relative to the public folder)
           alt="Career growth illustration"
           className="hero-illustration"
         />

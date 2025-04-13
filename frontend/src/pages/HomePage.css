@@ -19,7 +19,7 @@
 }
 
 .hero-illustration {
-    max-width: 300px; /* Control illustration size */
+    max-width: 300px; /* Or 200px, or whatever looks best */
     height: auto;
     margin-bottom: 30px;
     /* Optional: Add a subtle animation */
