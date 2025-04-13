@@ -18,9 +18,12 @@ connectDB(); // Connect to MongoDB
 const app = express();
 
 // Define the allowed origin (your GitHub Pages URL)
-const allowedOrigins = ['https://abisoyeonanuga.github.io'];
+const allowedOrigins = [
+    'http://localhost:3000', // Your local frontend origin
+    // Add any other origins you need to allow (like your deployed frontend)
+    'https://abisoyeonanuga.github.io'
+];
 
-// --- CORS Configuration ---
 const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
@@ -36,7 +39,7 @@ const corsOptions = {
 
 
 // Middleware
-app.use(cors(corsOptions)); // Enable CORS for frontend requests
+app.use(cors()); // Enable CORS for frontend requests
 app.use(express.json()); // Body parser for JSON requests
 
 // Define API Routes
