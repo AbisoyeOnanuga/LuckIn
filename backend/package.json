@@ -14,7 +14,8 @@
     "express-openid-connect": "^2.18.0",
     "mongodb": "^6.15.0",
     "mongoose": "^8.13.2",
-    "multer": "^1.4.5-lts.2"
+    "multer": "^1.4.5-lts.2",
+    "puppeteer": "^24.6.1"
   },
   "main": "server.js",
   "scripts": {
