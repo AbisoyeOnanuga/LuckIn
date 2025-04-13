@@ -1,0 +1,71 @@
+.homepage-container {
+    /* Ensures the container takes up at least the full viewport height */
+    min-height: calc(100vh - 60px); /* Adjust 60px based on your navbar height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Optional: Add a subtle gradient background */
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%); /* Example: Light cyan gradient */
+    /* Or a solid optimistic color */
+    /* background-color: #f0f9ff; */ /* Example: Very light blue */
+    padding: 40px 20px; /* Add some padding */
+    box-sizing: border-box;
+}
+
+.hero-section {
+    text-align: center;
+    max-width: 800px; /* Limit width for readability */
+    margin-bottom: 40px; /* Space below hero */
+}
+
+.hero-illustration {
+    max-width: 300px; /* Control illustration size */
+    height: auto;
+    margin-bottom: 30px;
+    /* Optional: Add a subtle animation */
+    animation: float 3s ease-in-out infinite;
+}
+
+.hero-title {
+    font-size: 2.5em; /* Larger title */
+    color: #004d40; /* Darker teal/green for contrast */
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.hero-subtitle {
+    font-size: 1.2em;
+    color: #00695c; /* Slightly lighter teal/green */
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+/* Optional: Basic styling for a Call to Action button */
+.cta-button {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    background-color: #00796b; /* Teal/Green */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+}
+
+.cta-button:hover {
+    background-color: #004d40; /* Darker shade on hover */
+}
+
+/* Optional: Simple floating animation for the illustration */
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
