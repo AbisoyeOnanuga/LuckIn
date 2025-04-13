@@ -99,7 +99,7 @@ const RecommendationsDashboard = () => {
             <section className="dashboard-section">
                 <h2>Recommended Playlists (Spotify)</h2>
                 {/* <PlaylistRecommendations /> */}
-                <p>[Playlist Recommendations Placeholder]</p>
+                <p>[Coming soon ...]</p>
             </section>
             <hr />
             <section className="dashboard-section">
@@ -110,7 +110,7 @@ const RecommendationsDashboard = () => {
             <section className="dashboard-section">
                 <h2>Recommended Training (Coursera/Udemy)</h2>
                 {/* <TrainingRecommendations /> */}
-                <p>[Training Recommendations Placeholder]</p>
+                <p>[Coming soon ...]</p>
             </section>
         </div>
     );
