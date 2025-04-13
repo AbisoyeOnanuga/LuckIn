@@ -17,8 +17,26 @@ connectDB(); // Connect to MongoDB
 
 const app = express();
 
+// Define the allowed origin (your GitHub Pages URL)
+const allowedOrigins = ['https://abisoyeonanuga.github.io'];
+
+// --- CORS Configuration ---
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    // or requests from allowed origins
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  optionsSuccessStatus: 200 // For legacy browser compatibility
+};
+
+
 // Middleware
-app.use(cors()); // Enable CORS for frontend requests
+app.use(cors(corsOptions)); // Enable CORS for frontend requests
 app.use(express.json()); // Body parser for JSON requests
 
 // Define API Routes
