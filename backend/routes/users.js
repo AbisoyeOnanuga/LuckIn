@@ -227,6 +227,55 @@ router.post(
     }
 );
 
+// @route   PUT api/users/profile/goals
+// @desc    Update user's career goals
+// @access  Private
+router.put('/profile/goals', checkJwt, async (req, res) => {
+    const auth0Id = req.auth.payload.sub;
+    const { careerGoals } = req.body; // Expect an array of strings
+
+    // Basic validation
+    if (!Array.isArray(careerGoals)) {
+        return res.status(400).json({ message: 'Invalid input: careerGoals must be an array.' });
+    }
+    // Optional: Further validation (e.g., check if array elements are strings)
+    if (!careerGoals.every(goal => typeof goal === 'string')) {
+         return res.status(400).json({ message: 'Invalid input: all career goals must be strings.' });
+    }
+
+    console.log(`Updating career goals for user ${auth0Id}:`, careerGoals);
+
+    try {
+        // Find the user and update their goals
+        // Use findOneAndUpdate to get the updated document back if needed
+        const updatedUser = await User.findOneAndUpdate(
+            { auth0Id: auth0Id },
+            { $set: { careerGoals: careerGoals } },
+            { new: true, // Return the modified document
+              select: 'careerGoals' // Only select the updated field for the response
+            }
+        );
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        console.log(`Successfully updated goals for user ${auth0Id}`);
+
+        // Send back a success response with the updated goals (or just a success message)
+        res.json({
+            message: 'Career goals updated successfully.',
+            // Include the updated profile part for the frontend to use
+            updatedProfile: {
+                careerGoals: updatedUser.careerGoals
+            }
+        });
+
+    } catch (error) {
+        console.error(`Error updating career goals for user ${auth0Id}:`, error);
+        res.status(500).json({ message: 'Server error updating career goals.' });
+    }
+});
 
 // Add other user-related routes if needed
 
