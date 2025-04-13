@@ -1,0 +1,362 @@
+/* f:\Documents\vscode\LuckIn\frontend\src\pages\ProfilePage.css */
+
+.profile-container {
+    max-width: 900px; /* Limit overall width */
+    margin: 30px auto; /* Center the container with top/bottom margin */
+    padding: 20px;
+    background-color: #fff; /* White background for the main content area */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.profile-container h1 {
+    text-align: center;
+    color: #004d40; /* Dark theme color */
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+/* Header Layout (Picture + Info) */
+.profile-header {
+    display: flex;
+    align-items: center; /* Vertically align items */
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    gap: 25px; /* Space between picture and info */
+}
+
+.profile-picture {
+    border-radius: 50%; /* Make it circular */
+    width: 100px; /* Increase size */
+    height: 100px;
+    object-fit: cover; /* Ensure image covers the area */
+    border: 3px solid #00796b; /* Add a themed border */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-info h2 {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-size: 1.8em;
+}
+
+.profile-info p {
+    margin: 0;
+    color: #555;
+    font-size: 1.1em;
+}
+
+/* General Section Styling */
+.profile-section {
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #eee;
+}
+
+.profile-section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.profile-section h2 {
+    color: #00695c; /* Lighter theme color for section titles */
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.4em;
+    border-bottom: 1px dashed #ddd; /* Subtle separator for title */
+    padding-bottom: 8px;
+}
+
+/* Skills List Styling */
+.skills-list ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 5px;
+}
+
+/* Skills List Styling */
+.skills-list ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 10px; /* Add some space above the list */
+    display: flex; /* Use flexbox for wrapping */
+    flex-wrap: wrap; /* Allow items to wrap to the next line */
+    gap: 8px; /* Space between skill tags */
+}
+
+.skills-list li {
+    display: inline-block; /* Already set, but good to confirm */
+    background-color: #e0f2f1; /* Light teal/cyan background - adjust to theme */
+    color: #004d40; /* Darker text color for contrast */
+    padding: 5px 10px; /* Vertical and horizontal padding */
+    border-radius: 15px; /* Rounded corners for tag shape */
+    font-size: 0.9em; /* Slightly smaller font */
+    margin-bottom: 5px; /* Add bottom margin in case they wrap */
+    /* Optional: Add a subtle border */
+    /* border: 1px solid #b2dfdb; */
+}
+
+/* Style for the '...' indicator if skills are truncated */
+.skills-more {
+    font-style: italic;
+    color: #777;
+    background-color: transparent !important; /* Override background */
+    padding: 5px 0 !important; /* Adjust padding */
+}
+
+
+/* Upload Section Specific Styles */
+.upload-section {
+    text-align: center; /* Center the content */
+    background-color: #fafafa; /* Light background to group elements */
+    padding: 30px 20px; /* More padding */
+    border-radius: 8px; /* Match container radius */
+    border: 1px solid #eee; /* Subtle border */
+}
+
+/* Style the form if you use one */
+.upload-section .resume-upload-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Space between elements */
+}
+
+
+/* Style the file input label (acting as "Choose File" button) */
+.upload-section .resume-upload-label {
+    display: inline-block;
+    padding: 10px 25px; /* Make it button-like */
+    background-color: #ffffff; /* White background */
+    border: 2px solid #00796b; /* Use theme color for border */
+    color: #00796b; /* Use theme color for text */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+.upload-section .resume-upload-label:hover {
+    background-color: #e0f2f1; /* Light theme background on hover */
+    color: #004d40; /* Darker theme text on hover */
+}
+
+/* Style the status message (e.g., selected file name) */
+.upload-section .upload-status {
+    margin-top: 5px; /* Space above status */
+    margin-bottom: 5px; /* Space below status */
+    color: #555;
+    font-size: 0.9em;
+    font-style: italic;
+}
+
+
+/* Style the actual Upload button */
+.upload-section .resume-upload-button {
+    padding: 12px 30px; /* Slightly larger padding */
+    background-color: #00796b; /* Theme color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    font-size: 1em;
+    font-weight: bold;
+    /* Remove default margin if form gap handles spacing */
+    /* margin-top: 10px; */
+}
+
+.upload-section .resume-upload-button:hover {
+    background-color: #004d40; /* Darker theme color */
+}
+
+.upload-section .resume-upload-button:active {
+    transform: scale(0.98); /* Slight shrink effect on click */
+}
+
+/* Style for disabled button */
+.upload-section .resume-upload-button:disabled {
+    background-color: #b2dfdb; /* Lighter, muted theme color */
+    cursor: not-allowed;
+    transform: none; /* Disable active effect */
+}
+
+/* Container for the file input elements */
+.upload-section .resume-upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Space between elements */
+}
+
+/* Group for the label and file status text */
+.upload-section .file-input-group {
+    display: flex;
+    align-items: center; /* Align label and text vertically */
+    gap: 10px; /* Space between label and text */
+}
+
+/* Style for the file name / "No file chosen" text */
+.upload-section .file-selection-status {
+    font-size: 0.9em;
+    color: #666;
+    font-style: italic;
+    /* Optional: Prevent text from breaking awkwardly */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px; /* Adjust max-width as needed */
+}
+
+/* Style the overall upload status message (Success/Error) */
+.upload-section .upload-status {
+    margin-top: 0; /* Remove extra margin if gap handles spacing */
+    margin-bottom: 0;
+    font-size: 0.9em;
+    font-weight: bold;
+    /* Color is set inline based on status */
+}
+
+/* Goals List Styling - Updated */
+.goals-list {
+    margin-bottom: 20px;
+}
+
+.goals-list ul {
+    list-style: none; /* Remove bullet points */
+    padding-left: 0; /* Remove default padding */
+    margin-top: 10px;
+    display: flex; /* Use flexbox for wrapping */
+    flex-wrap: wrap; /* Allow items to wrap */
+    gap: 10px; /* Space between goal tags */
+}
+
+.goals-list li {
+    /* --- Apply Tag Styling --- */
+    display: inline-flex; /* Use inline-flex to align text and button */
+    align-items: center; /* Vertically center text and button */
+    background-color: #e0f2f1; /* Same as skills list */
+    color: #004d40; /* Same as skills list */
+    padding: 5px 8px 5px 12px; /* Adjust padding (less padding on the right before button) */
+    border-radius: 15px; /* Same as skills list */
+    font-size: 0.9em; /* Same as skills list */
+    margin-bottom: 5px; /* Keep for wrapping */
+}
+
+/* Style for the goal text itself */
+.goals-list li span {
+    /* flex-grow: 1; */ /* Might not be needed now */
+    margin-right: 5px; /* Smaller space between text and button */
+}
+
+/* Delete Button Styling - Adjustments */
+.goal-delete-button {
+    background-color: transparent;
+    border: none;
+    color: #dc3545; /* Base red color */
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 4px;
+    line-height: 1;
+    transition: color 0.2s ease, transform 0.1s ease; /* Added color transition */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+/* --- Add hover state for delete button --- */
+.goal-delete-button:hover {
+    color: #a71d2a; /* Darker red on hover */
+    transform: scale(1.1); /* Slightly enlarge on hover */
+}
+/* --- --- */
+
+.goal-delete-button:active {
+    transform: scale(0.9); /* Keep click effect */
+}
+
+.goal-delete-button:disabled {
+    color: #adb5bd; /* Grey out when disabled */
+    cursor: not-allowed;
+    transform: none; /* Remove hover/active transforms when disabled */
+}
+
+
+/* Add Goal Form Styling */
+.add-goal-form {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+    align-items: center;
+    /* Removed justify-content: center; to allow input to grow */
+}
+
+.goal-input {
+    flex-grow: 1; /* Allow input to take available space */
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    transition: border-color 0.3s ease;
+}
+
+.goal-input:focus {
+    outline: none;
+    border-color: #00796b;
+    box-shadow: 0 0 0 2px rgba(0, 121, 107, 0.2);
+}
+
+.goal-add-button {
+    padding: 10px 20px;
+    background-color: #00796b; /* Base theme color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease; /* Ensure transition is present */
+    font-size: 1em;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* --- Ensure hover state for add button is distinct --- */
+.goal-add-button:hover {
+    background-color: #004d40; /* Darker theme color - should be noticeable */
+}
+/* --- --- */
+
+.goal-add-button:active {
+    transform: scale(0.98); /* Keep click effect */
+}
+
+.goal-add-button:disabled {
+    background-color: #b2dfdb; /* Lighter, muted theme color */
+    cursor: not-allowed;
+    transform: none; /* Remove hover/active transforms when disabled */
+}
+
+
+/* Consistent Loading/Error Messages */
+.loading-message,
+.error-message {
+    padding: 15px;
+    text-align: center;
+    color: #555;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    margin: 20px 0;
+    border: 1px solid #eee;
+}
+
+.error-message {
+    color: #d9534f; /* Bootstrap danger color */
+    background-color: #f2dede;
+    border: 1px solid #ebccd1;
+}

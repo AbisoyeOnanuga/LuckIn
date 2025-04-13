@@ -79,7 +79,7 @@ const ResumeUpload = ({ onUploadSuccess }) => { // Accept a callback prop
   };
 
   return (
-    <div>
+    <div className="resume-upload-form">
       <h3>Upload/Update Resume</h3>
       <p>Upload a new resume (PDF or DOCX) to update your profile and job recommendations.</p>
       <input
@@ -88,10 +88,26 @@ const ResumeUpload = ({ onUploadSuccess }) => { // Accept a callback prop
         accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" // Be more specific with MIME types
         onChange={handleFileChange}
         disabled={isUploading}
-        style={{ display: 'block', margin: '10px 0' }} // Basic styling
+        style={{ display: 'none', margin: '10px 0' }} // Basic styling
       />
-      <button onClick={handleUpload} disabled={!selectedFile || isUploading}>
-        {isUploading ? 'Processing...' : 'Upload Resume'}
+
+      {/* Group label and file status */}
+      <div className="file-input-group">
+        <label htmlFor="resume-upload-input" className="resume-upload-label">
+          Choose File
+        </label>
+        {/* --- Add this span to display file status --- */}
+        <span className="file-selection-status">
+          {selectedFile ? selectedFile.name : 'No file chosen'}
+        </span>
+      </div>
+
+      <button
+        type="submit"
+        className="resume-upload-button"
+        disabled={!selectedFile || isUploading}
+      >
+        {isUploading ? 'Uploading...' : 'Upload Resume'}
       </button>
       {/* Display status messages */}
       {uploadStatus && (

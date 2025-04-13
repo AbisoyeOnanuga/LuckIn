@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
-import ResumeUpload from '../components/Resume/ResumeUpload'; // <-- Import the component
+import ResumeUpload from '../components/Resume/ResumeUpload';
+import './ProfilePage.css';
 
 // Define the base URL for your API from environment variables
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -16,6 +17,12 @@ const ProfilePage = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(false); // State for profile loading
   const [error, setError] = useState(null);
+
+  // --- Add state for new goal input and goal updates ---
+  const [newGoal, setNewGoal] = useState('');
+  const [isUpdatingGoals, setIsUpdatingGoals] = useState(false);
+  const [goalUpdateError, setGoalUpdateError] = useState('');
+  const [deletingGoalIndex, setDeletingGoalIndex] = useState(null);
 
   // Function to fetch profile data
   const fetchUserProfile = async () => {
@@ -71,19 +78,87 @@ const ProfilePage = () => {
     // Update the local profile state with the data returned from the upload endpoint
     // This provides immediate feedback without needing a full page refresh/refetch
     if (uploadResult.updatedProfile) {
-        setUserProfile(prevProfile => ({
-            ...prevProfile,
-            resumeFilename: uploadResult.updatedProfile.resumeFilename || prevProfile?.resumeFilename,
-            resumeLastUploaded: uploadResult.updatedProfile.resumeLastUploaded || prevProfile?.resumeLastUploaded,
-            // Update resumeData if you want to display parsed info immediately
-            resumeData: uploadResult.updatedProfile.resumeData || prevProfile?.resumeData
-        }));
+      setUserProfile(prevProfile => ({
+        ...prevProfile,
+        resumeFilename: uploadResult.updatedProfile.resumeFilename || prevProfile?.resumeFilename,
+        resumeLastUploaded: uploadResult.updatedProfile.resumeLastUploaded || prevProfile?.resumeLastUploaded,
+        // Update resumeData if you want to display parsed info immediately
+        resumeData: uploadResult.updatedProfile.resumeData || prevProfile?.resumeData
+      }));
     } else {
-        // If backend didn't return updatedProfile, refetch the whole profile
-        // This is a fallback, ideally the backend should return the updated data
-        console.log("Backend did not return updated profile data, refetching...");
-        fetchUserProfile();
+      // If backend didn't return updatedProfile, refetch the whole profile
+      // This is a fallback, ideally the backend should return the updated data
+      console.log("Backend did not return updated profile data, refetching...");
+      fetchUserProfile();
     }
+  };
+
+  // --- Function to update goals on the backend (used by add and delete) ---
+  const updateGoalsOnBackend = async (updatedGoalsArray) => {
+    setIsUpdatingGoals(true); // Use general updating state for backend call
+    setGoalUpdateError('');
+    try {
+      const accessToken = await getAccessTokenSilently({
+        authorizationParams: { audience: process.env.REACT_APP_AUTH0_AUDIENCE },
+      });
+      const response = await fetch(`${API_BASE_URL}/users/profile/goals`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ careerGoals: updatedGoalsArray }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to update goals.');
+      }
+      // Update local state
+      setUserProfile(prevProfile => ({
+        ...prevProfile,
+        careerGoals: result.updatedProfile?.careerGoals || updatedGoalsArray
+      }));
+      return true; // Indicate success
+    } catch (err) {
+      console.error("Error updating goals:", err);
+      setGoalUpdateError(err.message || 'An error occurred while updating goals.');
+      return false; // Indicate failure
+    } finally {
+      setIsUpdatingGoals(false);
+    }
+  };
+
+  // --- Add function to handle adding a new goal ---
+  const handleAddGoal = async (event) => {
+    event.preventDefault();
+    if (!newGoal.trim()) {
+        setGoalUpdateError('Please enter a goal.');
+        return;
+    }
+    if (!userProfile) {
+        setGoalUpdateError('User profile not loaded yet.');
+        return;
+    }
+    const updatedGoals = [...new Set([...(userProfile.careerGoals || []), newGoal.trim()])];
+    const success = await updateGoalsOnBackend(updatedGoals);
+    if (success) {
+        setNewGoal(''); // Clear input only on success
+    }
+};
+// --- ---
+
+// --- Add function to handle deleting a goal ---
+const handleDeleteGoal = async (indexToDelete) => {
+    if (!userProfile || !userProfile.careerGoals) return;
+
+    setDeletingGoalIndex(indexToDelete); // Set loading state for this specific goal
+    setGoalUpdateError(''); // Clear previous errors
+
+    const updatedGoals = userProfile.careerGoals.filter((_, index) => index !== indexToDelete);
+
+    await updateGoalsOnBackend(updatedGoals); // Call the shared update function
+
+    setDeletingGoalIndex(null); // Reset loading state for this goal
   };
 
   // Handle Auth0 loading state
@@ -97,70 +172,106 @@ const ProfilePage = () => {
   }
 
   return (
-    <div>
+    // --- Add container class ---
+    <div className="profile-container">
       <h1>Your Profile</h1>
-      {error && <p style={{ color: 'red' }}>Error loading profile: {error}</p>}
+      {error && <p className="error-message">Error loading profile: {error}</p>}
 
-      {/* Display basic info from Auth0 */}
+      {/* --- Profile Header Section --- */}
       {auth0User && (
-        <div style={{ marginBottom: '20px', paddingBottom: '20px', borderBottom: '1px solid #ccc' }}>
-          <img src={auth0User.picture} alt={auth0User.name} style={{ borderRadius: '50%', width: '80px', height: '80px', float: 'left', marginRight: '20px' }} />
-          <div style={{ overflow: 'hidden' }}>
+        <div className="profile-header">
+          <img src={auth0User.picture} alt={auth0User.name} className="profile-picture" />
+          <div className="profile-info">
             <h2>{auth0User.name}</h2>
             <p>{auth0User.email}</p>
           </div>
-          <div style={{clear: 'both'}}></div> {/* Clear float */}
         </div>
       )}
 
-      {/* Display data fetched from your backend */}
-      {isLoading && <p>Loading profile details...</p>}
+      {/* --- Profile Details Section --- */}
+      {isLoading && <p className="loading-message">Loading profile details...</p>}
       {userProfile && !isLoading && (
-        <section style={{ marginBottom: '20px', paddingBottom: '20px', borderBottom: '1px solid #ccc' }}>
-          <h2>Profile Details</h2>
-          {/* <p><strong>Database ID:</strong> {userProfile._id}</p> */}
-          {/* <p><strong>Auth0 ID:</strong> {userProfile.auth0Id}</p> */}
-          <p><strong>Joined:</strong> {new Date(userProfile.createdAt).toLocaleDateString()}</p>
-          {/* Display resume info */}
-          <p>
-              <strong>Current Resume:</strong> {userProfile.resumeFilename || 'None uploaded'}
-              {userProfile.resumeLastUploaded && ` (Uploaded: ${new Date(userProfile.resumeLastUploaded).toLocaleString()})`}
-          </p>
-          {/* Optionally display some parsed data */}
-          {userProfile.resumeData?.skills && (
-              <div>
+          <section className="profile-section">
+              <h2>Profile Details</h2>
+              <p><strong>Joined:</strong> {new Date(userProfile.createdAt).toLocaleDateString()}</p>
+              <p>
+                <strong>Current Resume:</strong> {userProfile.resumeFilename || 'None uploaded'}
+                {userProfile.resumeLastUploaded && ` (Uploaded: ${new Date(userProfile.resumeLastUploaded).toLocaleString()})`}
+              </p>
+              {userProfile.resumeData?.skills && userProfile.resumeData.skills.length > 0 && (
+                <div className="skills-list">
                   <strong>Extracted Skills:</strong>
-                  <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
-                      {userProfile.resumeData.skills.slice(0, 10).map((skill, index) => ( // Show top 10 skills
-                          <li key={index} style={{ display: 'inline-block', background: '#eee', borderRadius: '4px', padding: '2px 6px', margin: '2px' }}>
-                              {skill}
-                          </li>
-                      ))}
-                      {userProfile.resumeData.skills.length > 10 && ' ...'}
+                  <ul>
+                    {userProfile.resumeData.skills.slice(0, 10).map((skill, index) => (
+                      <li key={index}>{skill}</li>
+                    ))}
+                    {userProfile.resumeData.skills.length > 10 && <li className="skills-more">...</li>}
                   </ul>
-              </div>
-          )}
-        </section>
+                </div>
+              )}
+          </section>
       )}
 
-      {/* Render the ResumeUpload component */}
-      <section style={{ marginBottom: '20px', paddingBottom: '20px', borderBottom: '1px solid #ccc' }}>
+      {/* --- Resume Upload Section --- */}
+      <section className="profile-section upload-section">
+        {/* Title moved outside ResumeUpload for consistency */}
+        <h2>Update Resume</h2>
         <ResumeUpload onUploadSuccess={handleResumeUploadSuccess} />
       </section>
 
-      <section>
+      {/* --- Career Goals Section --- */}
+      <section className="profile-section goals-section">
         <h2>Career Goals</h2>
-        {/* <GoalTracker /> */}
-        <p>[Career Goal Tracking Component Placeholder]</p>
-        {/* Display current goals if available */}
-        {userProfile?.careerGoals && userProfile.careerGoals.length > 0 && (
-            <div>
+
+        {/* Display existing goals */}
+        {userProfile?.careerGoals && userProfile.careerGoals.length > 0 ? (
+            <div className="goals-list">
                 <strong>Current Goals:</strong>
                 <ul>
-                    {userProfile.careerGoals.map((goal, index) => <li key={index}>{goal}</li>)}
+                    {userProfile.careerGoals.map((goal, index) => (
+                        <li key={index}>
+                            <span>{goal}</span> {/* Wrap goal text in span */}
+                            {/* Add Delete Button */}
+                            <button
+                                onClick={() => handleDeleteGoal(index)}
+                                className="goal-delete-button"
+                                // Disable while this specific goal or any goal is being updated/deleted
+                                disabled={isUpdatingGoals || deletingGoalIndex === index}
+                                aria-label={`Delete goal: ${goal}`} // Accessibility
+                            >
+                                {/* Simple 'X' or use an icon */}
+                                &times;
+                            </button>
+                        </li>
+                    ))}
                 </ul>
             </div>
+        ) : (
+            <p>You haven't added any career goals yet.</p>
         )}
+
+        {/* Form to add a new goal */}
+        <form onSubmit={handleAddGoal} className="add-goal-form">
+          <label htmlFor="new-goal-input" className="sr-only">Add a new goal</label>
+          <input
+            type="text"
+            id="new-goal-input"
+            value={newGoal}
+            onChange={(e) => setNewGoal(e.target.value)}
+            placeholder="Add a new career goal (e.g., Learn React Native)"
+            className="goal-input"
+            disabled={isUpdatingGoals} // Disable input while any goal update is happening
+          />
+          <button
+            type="submit"
+            className="goal-add-button"
+            disabled={isUpdatingGoals || !newGoal.trim()}
+          >
+            {isUpdatingGoals && deletingGoalIndex === null ? 'Adding...' : 'Add Goal'} {/* Show 'Adding...' only when adding */}
+          </button>
+        </form>
+        {goalUpdateError && <p className="error-message goal-error">{goalUpdateError}</p>}
+      
       </section>
     </div>
   );
