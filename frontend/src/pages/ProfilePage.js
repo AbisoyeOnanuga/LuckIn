@@ -4,7 +4,9 @@ import ResumeUpload from '../components/Resume/ResumeUpload';
 import './ProfilePage.css';
 
 // Define the base URL for your API from environment variables
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? process.env.REACT_APP_API_BASE_URL
+  : ''; // Use empty string for development proxy
 
 const ProfilePage = () => {
   const {
