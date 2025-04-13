@@ -10,6 +10,7 @@ import DashboardPage from './pages/RecommendationsDashboard';
 // import CallbackPage from './pages/CallbackPage'; // You might need this later
 
 // Import Components
+import NavBar from './components/Navigation/NavBar';
 import LoginButton from './components/Auth/LoginButton';
 import LogoutButton from './components/Auth/LogoutButton';
 import './App.css'; // Assuming you have some basic CSS
@@ -29,15 +30,7 @@ function App() {
 
   return (
     <div className="App">
-      <header className="app-header"> {/* Added class for potential styling */}
-        <nav>
-          <Link to="/">Home</Link> |{' '}
-          {isAuthenticated && <Link to="/dashboard">Dashboard</Link>} |{' '}
-          {isAuthenticated && <Link to="/profile">Profile</Link>} |{' '}
-          {!isAuthenticated ? <LoginButton /> : <LogoutButton />}
-        </nav>
-        <hr />
-      </header>
+      <NavBar />
 
       <main className="app-main"> {/* Added class for potential styling */}
         <Routes>
