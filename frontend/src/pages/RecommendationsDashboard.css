@@ -1,3 +1,71 @@
+.dashboard-container {
+    padding: 20px; /* Add overall padding */
+}
+  
+.welcome-message {
+    font-size: 1.1em;
+    color: #333;
+}
+  
+.dashboard-summary {
+    background-color: #eef; /* Light blue background */
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #cce;
+}
+  
+.dashboard-summary p {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+  
+.dashboard-summary ul {
+    margin-top: 5px;
+    padding-left: 20px; /* Indent list */
+}
+
+.dashboard-summary li {
+    margin-bottom: 5px;
+}
+
+/* --- Checklist Styling --- */
+.next-steps-list {
+    list-style: none; /* Remove default bullets */
+    padding-left: 5px; /* Adjust left padding as needed */
+    margin-top: 10px;
+}
+
+.next-steps-list li {
+    margin-bottom: 8px;
+    /* Align items using flexbox for better control */
+    display: flex;
+    align-items: flex-start; /* Align checkbox with the start of the text line */
+}
+
+.next-steps-list label {
+    display: flex; /* Align checkbox and text within the label */
+    align-items: center;
+    cursor: pointer;
+    color: #333;
+    transition: color 0.2s ease;
+}
+
+.next-steps-list input[type="checkbox"] {
+    margin-right: 10px; /* Space between checkbox and text */
+    /* Optional: Style the checkbox itself */
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* Style for checked items */
+    .next-steps-list li.checked label {
+    text-decoration: line-through;
+    color: #777; /* Dim the text color */
+}
+
 .dashboard-section {
     padding-bottom: 20px;
     margin-bottom: 20px;
@@ -10,4 +78,20 @@ hr {
     margin-top: 25px;
     margin-bottom: 25px;
 }
-  
+
+.error-message, .login-prompt, .loading-message {
+    padding: 15px;
+    margin: 20px;
+    border-radius: 5px;
+    text-align: center;
+    background-color: #fdd; /* Example for error */
+    color: #c00;
+}
+.login-prompt {
+    background-color: #fff3cd;
+    color: #856404;
+}
+.loading-message {
+    background-color: #eef;
+    color: #33a;
+}
