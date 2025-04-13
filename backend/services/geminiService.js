@@ -194,4 +194,126 @@ export const processResumeWithGemini = async (fileBuffer, mimeType) => {
     }
 };
 
+
+// --- NEW Function for Job Relevance Scoring ---
+
+/**
+ * Asks Gemini to evaluate the relevance of a job based on user skills.
+ * @param {string[]} userSkills - Array of skills from the user's resume.
+ * @param {string} jobTitle - The title of the job posting.
+ * @param {string} jobDescriptionSnippet - The description snippet from the job posting.
+ * @returns {Promise<{score: number, explanation: string} | null>} - Relevance score (0-1) and explanation, or null on error/invalid response.
+ */
+export const getJobRelevanceScore = async (userSkills, jobTitle, jobDescriptionSnippet) => {
+    // Check if Gemini client is initialized
+    if (!genAI) {
+        console.error("Gemini API client is not initialized (missing API key). Skipping relevance check.");
+        return null; // Or return a default score/object
+    }
+    // Basic input validation
+    if (!userSkills || userSkills.length === 0 || !jobTitle || !jobDescriptionSnippet) {
+        console.warn("Missing data for relevance check (skills, title, or description). Skipping.");
+        return null;
+    }
+
+    // Configuration for this specific task (JSON output, moderate temperature)
+    const generationConfig = {
+        temperature: 0.5,
+        topP: 0.95,
+        topK: 64,
+        maxOutputTokens: 1024, // Should be sufficient for score + explanation
+        responseMimeType: "application/json", // Request JSON output
+    };
+    const safetySettings = [ // Re-using standard safety settings
+        { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+        { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+        { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+        { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE },
+    ];
+
+    // Get a model instance (using 1.5 flash as it's fast and capable)
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", safetySettings, generationConfig });
+
+    const userSkillsString = userSkills.join(', ');
+    const prompt = `
+        Analyze the relevance of the following job posting for a candidate with a specific set of skills.
+
+        Candidate Skills:
+        ${userSkillsString}
+
+        Job Posting:
+        Title: ${jobTitle}
+        Description Snippet: ${jobDescriptionSnippet}
+
+        Based *only* on the provided job title and description snippet, evaluate how relevant this job is for the candidate. Consider if the candidate's skills align with the requirements explicitly or implicitly mentioned.
+
+        Provide your response strictly as a JSON object with the following structure:
+        {
+          "score": <A numerical score between 0.0 (not relevant) and 1.0 (highly relevant)>,
+          "explanation": "<A brief explanation (1-2 sentences) justifying the score>"
+        }
+        Do not include any markdown formatting like \`\`\`json ... \`\`\` or any text before or after the JSON object.
+    `;
+
+    try {
+        console.log(`Requesting relevance score from Gemini for job: "${jobTitle}"`);
+        // Using generateContent directly as it's simpler for single-turn requests
+        const result = await model.generateContent(prompt);
+
+        if (!result.response) {
+            console.error(`Gemini API Error: No response received for job relevance check ("${jobTitle}").`);
+            throw new Error("Gemini API did not return a response.");
+        }
+
+        const response = result.response;
+
+        // Check for valid content part
+        if (!response.candidates || response.candidates.length === 0 || !response.candidates[0].content || !response.candidates[0].content.parts || response.candidates[0].content.parts.length === 0 || !response.candidates[0].content.parts[0].text) {
+            const finishReason = response.candidates?.[0]?.finishReason;
+            const safetyRatings = response.candidates?.[0]?.safetyRatings;
+            console.error(`Gemini Error: No valid content part received for job relevance ("${jobTitle}").`, { finishReason, safetyRatings, response });
+            if (response.promptFeedback?.blockReason) {
+                 console.error(`Gemini Prompt Blocked: ${response.promptFeedback.blockReason}`, response.promptFeedback.safetyRatings);
+                 throw new Error(`Content generation blocked due to: ${response.promptFeedback.blockReason}`);
+            }
+            throw new Error("Gemini did not generate any content or response was blocked for job relevance.");
+        }
+
+        const generatedText = response.candidates[0].content.parts[0].text;
+        console.log(`Raw response text from Gemini (Job Relevance - "${jobTitle}"):`, generatedText.substring(0, 200) + "...");
+
+        try {
+            // Attempt to parse the JSON response directly
+            const parsedResponse = JSON.parse(generatedText);
+
+            // Validate the parsed response structure
+            if (typeof parsedResponse.score === 'number' && typeof parsedResponse.explanation === 'string') {
+                 console.log(`Received score ${parsedResponse.score} for job: "${jobTitle}"`);
+                return {
+                    score: Math.max(0, Math.min(1, parsedResponse.score)), // Clamp score between 0 and 1
+                    explanation: parsedResponse.explanation
+                };
+            } else {
+                console.warn(`Gemini response for "${jobTitle}" has unexpected JSON structure:`, generatedText);
+                // Attempt to return null or a default value if structure is wrong
+                return null;
+            }
+        } catch (parseError) {
+            console.error(`Error parsing JSON response from Gemini (Job Relevance - "${jobTitle}"):`, parseError);
+            console.error(`Gemini raw text was:`, generatedText);
+            // Return null if parsing fails
+            return null;
+        }
+
+    } catch (error) {
+        console.error(`Error calling Gemini API for job relevance ("${jobTitle}"):`, error);
+         // Avoid throwing generic error if a specific one was already thrown
+        if (!error.message.startsWith("Gemini") && !error.message.startsWith("Content generation blocked")) {
+            throw new Error(`Gemini API job relevance check failed: ${error.message}`);
+        } else {
+            throw error; // Re-throw specific errors
+        }
+    }
+};
+
 // Add more functions as needed...
