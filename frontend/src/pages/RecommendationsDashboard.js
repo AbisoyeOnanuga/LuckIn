@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import JobRecommendations from '../components/Jobs/JobRecommendations';
+import PodcastRecommendations from '../components/recommendations/PodcastRecommendations';
 import './RecommendationsDashboard.css';
 // import PlaylistRecommendations from '../components/Recommendations/PlaylistRecommendations'; // Future component
 // import PodcastRecommendations from '../components/Recommendations/PodcastRecommendations'; // Future component
@@ -103,8 +104,7 @@ const RecommendationsDashboard = () => {
             <hr />
             <section className="dashboard-section">
                 <h2>Recommended Podcasts (Listen Notes)</h2>
-                {/* <PodcastRecommendations /> */}
-                <p>[Podcast Recommendations Placeholder]</p>
+                <PodcastRecommendations />
             </section>
             <hr />
             <section className="dashboard-section">
