@@ -4,7 +4,7 @@ import { Routes, Route, Link } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 
 // Import Pages
-import HomePage from './pages/HomePage'; // <-- Import HomePage
+import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
 import DashboardPage from './pages/RecommendationsDashboard';
 // import CallbackPage from './pages/CallbackPage'; // You might need this later
