@@ -11,6 +11,13 @@ const auth0Domain = process.env.REACT_APP_AUTH0_DOMAIN;
 const auth0ClientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
 const auth0Audience = process.env.REACT_APP_AUTH0_AUDIENCE; // For requesting access token for your API
 
+// Get base path from PUBLIC_URL env var set during build by CRA
+const baseName = process.env.PUBLIC_URL || ""; // Defaults to "" if not set
+
+// ... Auth0Provider setup ...
+// Ensure redirectUri in Auth0Provider uses baseName:
+const redirectUri = `${window.location.origin}${baseName}/callback`;
+
 // --- Helper Component ---
 // This component allows us to use the useNavigate hook within the Auth0Provider's callback
 const Auth0ProviderWithRedirectCallback = ({ children }) => {
