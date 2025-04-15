@@ -45,7 +45,7 @@ app.use(express.json()); // Body parser for JSON requests
 // Define API Routes
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes); // Use new route
-app.use('/api/recommendations', recommendationRoutes); // Use new route
+app.use('/api/recommendations/podcasts', recommendationRoutes); // Use new route
 app.use('/api/jobs', jobRoutes); // Use new route
 
 // Basic route
