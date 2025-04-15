@@ -38,12 +38,12 @@
 3. **Frontend Setup**:
    - Install dependencies: cd frontend && npm install.
    - Adjust proxy settings or API endpoint URLs in the frontend code to point to the local backend - `http://localhost:5000/api`.
-  - Start the frontend server: `npm start`.
+   - Start the frontend server: `npm start`.
 
 4. **Database Setup**:
    - If using a local MongoDB instance, ensure it's running (mongod) and accessible.
-  - If using MongoDB Atlas, confirm your local IP is whitelisted in the Atlas dashboard.
-  - Seed initial data if required using scripts or manual entries.
+   - If using MongoDB Atlas, confirm your local IP is whitelisted in the Atlas dashboard.
+   - Seed initial data if required using scripts or manual entries.
 
 5. **Test Locally**:
    - Open the frontend in your browser `http://localhost:3000`.
