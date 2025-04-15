@@ -17,7 +17,8 @@
 2. **Backend Setup**:
    - Install dependencies: cd backend && npm install.
    - Create a .env file in the **backend** directory with the following variables:
-     ```PORT = 5001
+    ```
+        PORT = 5001
         MONGO_URI = "your-mongodb-uri"
         AUTH0_DOMAIN="your-auth0-domain"
         AUTH0_AUDIENCE="http://localhost:5001/api"
@@ -29,7 +30,8 @@
         `REACT_APP_AUTH0_DOMAIN="your-react-app-auth0-domain"
         REACT_APP_AUTH0_CLIENT_ID="your-react-app-auth0-client-id"
         REACT_APP_AUTH0_AUDIENCE="http://localhost:5001/api"
-        REACT_APP_API_BASE_URL="http://localhost:5001/api"```
+        REACT_APP_API_BASE_URL="http://localhost:5001/api"
+    ```
 
 3. **Frontend Setup**:
 - Install dependencies: cd frontend && npm install.
