@@ -21,7 +21,7 @@ const app = express();
 const allowedOrigins = [
     'http://localhost:3000', // Your local frontend origin
     // Add any other origins you need to allow (like your deployed frontend)
-    'https://abisoyeonanuga.github.io'
+    'https://abisoyeonanuga.github.io/'
 ];
 
 const corsOptions = {
@@ -34,12 +34,14 @@ const corsOptions = {
       callback(new Error('Not allowed by CORS'));
     }
   },
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
   optionsSuccessStatus: 200 // For legacy browser compatibility
 };
 
 
 // Middleware
-app.use(cors()); // Enable CORS for frontend requests
+app.use(cors(corsOptions)); // Enable CORS for frontend requests
 app.use(express.json()); // Body parser for JSON requests
 
 // Define API Routes

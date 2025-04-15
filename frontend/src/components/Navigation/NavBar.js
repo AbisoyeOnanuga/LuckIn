@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'; // Import useState and useEffect
-import { Link, NavLink } from 'react-router-dom'; // Use NavLink for active styling
+import { NavLink } from 'react-router-dom'; // Use NavLink for active styling
 import { useAuth0 } from '@auth0/auth0-react';
 import LoginButton from '../Auth/LoginButton';
 import LogoutButton from '../Auth/LogoutButton';
