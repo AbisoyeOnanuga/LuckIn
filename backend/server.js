@@ -17,6 +17,12 @@ connectDB(); // Connect to MongoDB
 
 const app = express();
 
+const clientOrigin = process.env.CLIENT_ORIGIN_URL;
+
+if (!clientOrigin) {
+    console.warn('WARN: CLIENT_ORIGIN_URL environment variable is not set!');
+}
+
 // Define the allowed origin (your GitHub Pages URL)
 const allowedOrigins = [
     'http://localhost:3000', // Your local frontend origin
@@ -25,15 +31,7 @@ const allowedOrigins = [
 ];
 
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    // or requests from allowed origins
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: clientOrigin,
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 200 // For legacy browser compatibility

@@ -11,11 +11,12 @@ const auth0Domain = process.env.REACT_APP_AUTH0_DOMAIN;
 const auth0ClientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
 const auth0Audience = process.env.REACT_APP_AUTH0_AUDIENCE; // For requesting access token for your API
 
-// Get base path from PUBLIC_URL (set by build based on package.json homepage)
-const baseName = process.env.PUBLIC_URL || "";
+// Get base path from PUBLIC_URL env var set during build by CRA
+const baseName = process.env.PUBLIC_URL || ""; // Defaults to "" if not set
 console.log("Using Basename:", baseName);
 
-// Calculate the correct redirect URI including the basename
+// ... Auth0Provider setup ...
+// Ensure redirectUri in Auth0Provider uses baseName:
 const redirectUri = `${window.location.origin}${baseName}/callback`;
 console.log("Using Redirect URI:", redirectUri);
 
@@ -50,12 +51,12 @@ const Auth0ProviderWithRedirectCallback = ({ children }) => {
       domain={auth0Domain}
       clientId={auth0ClientId}
       authorizationParams={{
-        // *** FIX: Use the calculated redirectUri variable ***
         redirect_uri: redirectUri,
-        audience: auth0Audience,
+        audience: auth0Audience, // Request token for your backend API
         scope: "openid profile email offline_access"
+        // scope: "openid profile email read:current_user update:current_user_metadata" // Add necessary scopes
       }}
-      onRedirectCallback={onRedirectCallback}
+      onRedirectCallback={onRedirectCallback} // <-- Add the callback handler here
       useRefreshTokens={true}
       cacheLocation="localstorage"
     >
