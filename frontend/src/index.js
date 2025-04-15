@@ -11,12 +11,13 @@ const auth0Domain = process.env.REACT_APP_AUTH0_DOMAIN;
 const auth0ClientId = process.env.REACT_APP_AUTH0_CLIENT_ID;
 const auth0Audience = process.env.REACT_APP_AUTH0_AUDIENCE; // For requesting access token for your API
 
-// Get base path from PUBLIC_URL env var set during build by CRA
-const baseName = process.env.PUBLIC_URL || ""; // Defaults to "" if not set
+// Get base path from PUBLIC_URL (set by build based on package.json homepage)
+const baseName = process.env.PUBLIC_URL || "";
+console.log("Using Basename:", baseName);
 
-// ... Auth0Provider setup ...
-// Ensure redirectUri in Auth0Provider uses baseName:
+// Calculate the correct redirect URI including the basename
 const redirectUri = `${window.location.origin}${baseName}/callback`;
+console.log("Using Redirect URI:", redirectUri);
 
 // --- Helper Component ---
 // This component allows us to use the useNavigate hook within the Auth0Provider's callback
@@ -49,12 +50,12 @@ const Auth0ProviderWithRedirectCallback = ({ children }) => {
       domain={auth0Domain}
       clientId={auth0ClientId}
       authorizationParams={{
-        redirect_uri: window.location.origin + '/callback', // Auth0 Callback URL
-        audience: auth0Audience, // Request token for your backend API
+        // *** FIX: Use the calculated redirectUri variable ***
+        redirect_uri: redirectUri,
+        audience: auth0Audience,
         scope: "openid profile email offline_access"
-        // scope: "openid profile email read:current_user update:current_user_metadata" // Add necessary scopes
       }}
-      onRedirectCallback={onRedirectCallback} // <-- Add the callback handler here
+      onRedirectCallback={onRedirectCallback}
       useRefreshTokens={true}
       cacheLocation="localstorage"
     >
@@ -68,7 +69,7 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <React.StrictMode>
-    <Router>
+    <Router basename={baseName}>
       {/* Use the helper component to wrap App */}
       <Auth0ProviderWithRedirectCallback>
         <App />
