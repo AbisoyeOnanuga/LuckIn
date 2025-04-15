@@ -38,7 +38,7 @@ const ProfilePage = () => {
         },
       });
 
-      const response = await fetch(`${API_BASE_URL}/users/profile`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/profile`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -101,7 +101,7 @@ const ProfilePage = () => {
       const accessToken = await getAccessTokenSilently({
         authorizationParams: { audience: process.env.REACT_APP_AUTH0_AUDIENCE },
       });
-      const response = await fetch(`${API_BASE_URL}/users/profile/goals`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/profile/goals`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

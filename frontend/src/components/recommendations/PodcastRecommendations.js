@@ -20,15 +20,31 @@ const stripHtml = (html) => {
     const [error, setError] = useState(null);
     const { getAccessTokenSilently } = useAuth0();
 
+    // --- Get the API Base URL from environment variables ---
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+
     useEffect(() => {
         const fetchPodcasts = async () => {
             setIsLoading(true);
             setError(null);
+
+            // --- Check if the base URL is configured ---
+            if (!apiBaseUrl) {
+                console.error("Error: REACT_APP_API_BASE_URL is not set.");
+                setError("API endpoint configuration is missing.");
+                setIsLoading(false);
+                return; // Stop execution if base URL is missing
+            }
+
             try {
                 const token = await getAccessTokenSilently();
                 console.log("Fetching podcast recommendations...");
 
-                const response = await axios.get('/api/recommendations/podcasts', {
+                // --- Construct the full URL ---
+                const apiUrl = `${apiBaseUrl}/api/recommendations/podcasts`;
+                console.log("Requesting URL:", apiUrl); // Log the URL being requested
+
+                const response = await axios.get(apiUrl, { // Use the full apiUrl
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -40,9 +56,20 @@ const stripHtml = (html) => {
             } catch (err) {
                 console.error("Error fetching podcast recommendations:", err);
                 let errorMessage = "Failed to load podcast recommendations.";
-                if (err.response?.data?.message) {
-                    errorMessage = err.response.data.message;
-                } else if (err.message) {
+                // Check for specific error details from backend or network error
+                if (err.response) {
+                    // The request was made and the server responded with a status code
+                    // that falls out of the range of 2xx
+                    console.error("Error Response Data:", err.response.data);
+                    console.error("Error Response Status:", err.response.status);
+                    errorMessage = `Error ${err.response.status}: ${err.response.data?.message || 'Server error'}`;
+                } else if (err.request) {
+                    // The request was made but no response was received
+                    console.error("Error Request:", err.request);
+                    errorMessage = "No response received from server. Check network or backend status.";
+                } else {
+                    // Something happened in setting up the request that triggered an Error
+                    console.error('Error Message:', err.message);
                     errorMessage = err.message;
                 }
                 setError(errorMessage);
@@ -53,7 +80,10 @@ const stripHtml = (html) => {
         };
 
         fetchPodcasts();
-    }, [getAccessTokenSilently]);
+    // Add apiBaseUrl to dependency array to satisfy eslint, though it won't change
+    }, [getAccessTokenSilently, apiBaseUrl]);
+
+    // ... rest of the component remains the same ...
 
     if (isLoading) {
         return <div className="loading-message">Loading podcast recommendations...</div>;
@@ -63,7 +93,7 @@ const stripHtml = (html) => {
         return <div className="error-message">Error: {error}</div>;
     }
 
-    if (!podcasts || podcasts.length === 0) { // Added !podcasts check
+    if (!podcasts || podcasts.length === 0) {
         return <div className="no-results-message">No relevant podcasts found based on your profile. Try adding more skills or career goals!</div>;
     }
 

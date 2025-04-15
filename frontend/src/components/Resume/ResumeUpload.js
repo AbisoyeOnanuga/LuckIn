@@ -41,7 +41,7 @@ const ResumeUpload = ({ onUploadSuccess }) => { // Accept a callback prop
       // 'resumeFile' MUST match the key expected by multer on the backend
       formData.append('resumeFile', selectedFile);
 
-      const response = await fetch(`${API_BASE_URL}/users/upload-resume`, {
+      const response = await fetch(`${API_BASE_URL}/api/users/upload-resume`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${accessToken}`,

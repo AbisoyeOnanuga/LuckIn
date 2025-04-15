@@ -22,7 +22,7 @@ const JobRecommendations = () => {
                     },
                 });
 
-                const response = await fetch(`${API_BASE_URL}/jobs/recommendations`, {
+                const response = await fetch(`${API_BASE_URL}/api/jobs/recommendations`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
